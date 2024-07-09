@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum CalculatorType {
     BMI("body-mass-index"),
     AVG_BLOOD_PRESSURE("average-blood-pressure"),
-    TITRATION("titration-speed");
+    TITRATION("titration-rate");
 
     private final String description;
 

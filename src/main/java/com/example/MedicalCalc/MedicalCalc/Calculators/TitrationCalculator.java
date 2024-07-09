@@ -22,17 +22,26 @@ public class TitrationCalculator extends BaseCalculator<TitrationRequest>{
 
     @Override
     public CalculatorResult calculate(TitrationRequest request) {
-        double dosage = 0;
-        if(!request.getIsMlInHour()){
-            dosage = request.getDosage() * 0.001 * request.getVolumeOfSolution() / (request.getWeight() * 1000 * 60);
+        try {
+            double dosage = 0;
+            if(!request.getIsMlInHour()){
+                dosage = Double.parseDouble(request.getDosage()) * 0.001 * Double.parseDouble(request.getVolumeOfSolution())
+                        / (Double.parseDouble(request.getWeight()) * 1000 * 60);
+            }
+            else{
+                dosage = Double.parseDouble(request.getDosage());
+            }
+            double infusionSpeed = Double.parseDouble(request.getWeight()) * dosage /
+                    (Double.parseDouble(request.getAmountOfDrug()) * (1000 /
+                            Double.parseDouble(request.getVolumeOfSolution()))) * 60;
+            log.debug("Калькулятор титрования, результат:" + infusionSpeed);
+            return new CalculatorResult((new DecimalFormat("#.###")).format(infusionSpeed));
         }
-        else{
-            dosage = request.getDosage();
+        catch (Exception e) {
+            e.printStackTrace();
+            log.error("Ошибка! {}", e.getMessage());
+            return new CalculatorResult((new DecimalFormat("#.###")).format(Double.valueOf("0.0")));
         }
-        double infusionSpeed = request.getWeight() * dosage /
-                (request.getAmountOfDrug() * (1000 /
-                        request.getVolumeOfSolution())) * 60;
-        log.debug("Калькулятор титрования, результат:" + infusionSpeed);
-        return new CalculatorResult((new DecimalFormat("#.###")).format(infusionSpeed));
+
     }
 }

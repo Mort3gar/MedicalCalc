@@ -97,9 +97,4 @@ public class CalculatorService {
         log.debug("Вызвано: метод getTitrationResult");
         return calculators.get(CalculatorType.TITRATION).calculate(request);
     }
-//
-//    public CalculatorResult getRIDDResult(@Valid RIDDCalculatorRequest calculatorRequest) {
-//        log.debug("Запущен метод getRIDDResult");
-//        return calculators.get(CalculatorType.RATE_INTRAVENOUS_DRIP_DRUG).calculate(calculatorRequest);
-//    }
 }

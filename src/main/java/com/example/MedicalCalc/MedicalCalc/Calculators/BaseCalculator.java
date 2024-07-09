@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public abstract class BaseCalculator<BaseRequest> {
+public abstract class BaseCalculator<BaseRequest> implements ICalculator<BaseRequest> {
     private final CalculatorType type;
     private final String description;
 

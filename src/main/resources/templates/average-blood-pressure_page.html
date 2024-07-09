@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Медицинский калькулятор</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+        }
+        .content-wrapper {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .error-box {
+            display: none;
+            color: #dc3545;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Медицинский калькулятор</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Главная <span class="sr-only">(текущая)</span></a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Калькуляторы
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/body-mass-index">Калькулятор ИМС</a>
+                    <a class="dropdown-item" href="/titration-rate">Расчет скорости инфузии препарата через линеомат (скорость титрования)</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Основной контент -->
+<div class="container mt-5">
+    <div class="content-wrapper">
+        <h1>Среднее артериальное давление</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <form id="calculator-form">
+                    <div class="form-group">
+                        <label for="input1">Систолическое АД</label>
+                        <input type="number" class="form-control" id="input1" placeholder="Введите значение">
+                    </div>
+                    <div class="form-group">
+                        <label for="input2">Диастолическое АД</label>
+                        <input type="number" class="form-control" id="input2" placeholder="Введите значение">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="calculate()">Рассчитать</button>
+                    <button type="reset" class="btn btn-secondary" onclick="clearInputs(this)">Сброс</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="result-box" id="result-box">
+                    <h5>Результат:</h5>
+                    <p id="result">Здесь будет отображаться результат.</p>
+                </div>
+                <div class="error-box" id="error-box">
+                    <strong>Ошибка:</strong>
+                    <p id="error"></p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h2>Информация о калькуляторе</h2>
+            <p id="info"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение Bootstrap JS и зависимостей -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const get = async (url) => (await axios.get(url)).data;
+    const post = async (url, dict_) => (await axios.post(url, dict_)).data;
+    const patch = async (url, dict_) => (await axios.patch(url, dict_)).data;
+
+    async function calculate() {
+        (document.getElementById("error-box")).style.display = "none";
+        (document.getElementById("error")).innerText = "";
+        post("/calculator/average-blood-pressure/result",{
+            sad: parseFloat(document.getElementById('input1').value) || 0,
+            dad: parseFloat(document.getElementById('input2').value) || 0
+        }).then(resp => {
+            document.getElementById('result').innerText = resp.result;
+        }).catch(err => {
+            (document.getElementById("error-box")).style.display = "block";
+            (err.response.data.violations).forEach(element => {
+                (document.getElementById('error')).innerText += element.message+"\n";
+            });
+        })
+    }
+
+    function clearInputs(button){
+        [...(button.parentElement).children].forEach(element => {
+            element.value = "";
+        });
+        (document.getElementById("error-box")).style.display = "none";
+        (document.getElementById("error")).innerText = "";
+
+    }
+
+    async function loadInfo(){
+        get("/calculator/average-blood-pressure/info").then(
+            resp => {
+                document.getElementById("info").innerHTML = resp.info;
+                console.log(resp.info);
+            }
+        );
+    }
+    window.onload = Promise.all([
+        loadInfo()
+    ])
+</script>
+</body>
+</html>

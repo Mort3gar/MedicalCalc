@@ -18,8 +18,15 @@ public class BMICalculator extends BaseCalculator<BMIRequest> {
 
     @Override
     public CalculatorResult calculate(BMIRequest body) {
-        double bmi = body.getWeight()/ Math.pow(body.getHeight()/100, 2);
-        log.debug("Калькулятор ИМТ, результат:" + bmi);
-        return new CalculatorResult(new DecimalFormat("#.##").format(bmi));
+        try {
+            double bmi = Double.parseDouble(body.getWeight())/ Math.pow(Double.parseDouble(body.getHeight())/100, 2);
+            log.debug("Калькулятор ИМТ, результат:" + bmi);
+            return new CalculatorResult(new DecimalFormat("#.##").format(bmi));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            log.error("Ошибка! {}", e.getMessage());
+            return new CalculatorResult((new DecimalFormat("#.###")).format(Double.valueOf("0.0")));
+        }
     }
 }

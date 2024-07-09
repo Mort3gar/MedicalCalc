@@ -19,8 +19,15 @@ public class AvgBloodPressureCalculator extends BaseCalculator<AvgBloodPressureR
 
     @Override
     public CalculatorResult calculate(AvgBloodPressureRequest request) {
-        int avg = (int) (request.getSad()/3+request.getDad()/3);
-        log.debug("Калькулятор САД, результат:" + avg);
-        return new CalculatorResult(Integer.toString(avg));
+        try{
+            int avg = (int) (Double.parseDouble(request.getSad())/3+Double.parseDouble(request.getDad())/3);
+            log.debug("Калькулятор САД, результат:" + avg);
+            return new CalculatorResult(Integer.toString(avg));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            log.error("Ошибка! {}", e.getMessage());
+            return new CalculatorResult((new DecimalFormat("#.###")).format(Double.valueOf("0.0")));
+        }
     }
 }
